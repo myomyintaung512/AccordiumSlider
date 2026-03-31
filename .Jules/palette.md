@@ -1,0 +1,3 @@
+## 2025-03-31 - [Keyboard support for jQuery gallery]
+**Learning:** For legacy jQuery-based galleries where interactive elements are non-semantic `div` tags, simply adding `tabindex="0"` and `role="link"` isn't enough. Event handling must be carefully mirrored between `hover` and `focus` to prevent jitter or unexpected collapse when both states are active. Additionally, when enabling the Space key for activation, `e.preventDefault()` is essential to prevent the browser's default scroll behavior.
+**Action:** Always check both `:hover` and `:focus` states before collapsing interactive elements that support both interaction methods. Always prevent default on Space key activation.
