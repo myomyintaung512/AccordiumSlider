@@ -46,6 +46,8 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr("tabindex", "0").attr("role", "link");
+		$(this).attr("aria-label", $(this).text().trim() || "Gallery item");
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,23 +62,33 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
+function activateBox($el) {
+  $el.parent().children(":first-child").clearQueue();
+  $el.css("border",border_hover+"px solid "+border_color);
+  $el.css("margin",margin_hover);
+  $el.parent().children(":first-child").animate({
     height: imgheight,
     opacity: 1,
   }, animation_speed ); 
-	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
+  $el.parent().children(":first-child").css('background-image',"url('"+$el.attr('big')+"')");
+}
+
+function deactivateBox($el) {
+  // Only deactivate if both hover and focus are lost
+  if ($el.is(':hover') || $el.is(':focus')) return;
+  $el.parent().children(":first-child").clearQueue();
+  $el.css("border",border_before+"px solid "+border_color);
+  $el.css("margin",margin_before);
+  $el.parent().children(":first-child").animate({
     height: "0",   
   }, animation_speed );
+}
+
+$(".row > .box").on('mouseenter focus', function(){
+  activateBox($(this));
+}).on('mouseleave blur', function(){
+  var $this = $(this);
+  setTimeout(function() { deactivateBox($this); }, 10);
 });
 $('.row > div:first-child').hover(
 function(){
@@ -101,6 +113,12 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
+$(".gallery > .row > .box").on('click keydown', function(e){
+  if (e.type === 'keydown') {
+    if (e.which !== 13 && e.which !== 32) return;
+    if (e.which === 32) e.preventDefault();
+  }
+  window.location = $(this).attr('url');
+});
+$("<style>.box:focus-visible { outline: 3px solid "+border_color+"; outline-offset: -3px; z-index: 10; position: relative; }</style>").appendTo("head");
 });
