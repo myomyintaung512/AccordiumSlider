@@ -37,7 +37,7 @@ if(align=="center"){
 $(".gallery").css("margin","0 auto");}
 var child = $(".gallery > div").get();
 
-$(child).each(function() {
+$(child).each(function(i) {
 		$('<img/>')[0].src = $(this).attr("big");
 		$(this).css('background-image',"url("+$(this).attr('small')+")");
 		$(this).css('float',"left");
@@ -46,6 +46,10 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr("role", "link");
+		$(this).attr("tabindex", "0");
+		var label = $(this).text().trim() || "Gallery item " + (i + 1);
+		$(this).attr("aria-label", label);
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,23 +64,48 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
+
+function showPreview($el) {
+  $el.parent().children(":first-child").clearQueue();
+  $el.css("border",border_hover+"px solid "+border_color);
+  $el.css("margin",margin_hover);
+  $el.parent().children(":first-child").animate({
     height: imgheight,
     opacity: 1,
   }, animation_speed ); 
-	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
+  $el.parent().children(":first-child").css('background-image',"url('"+$el.attr('big')+"')");
+}
+
+function hidePreview($el) {
+  $el.css("border",border_before+"px solid "+border_color);
+  $el.css("margin",margin_before);
+
+  var anyActive = $el.parent().find(".box").filter(function() {
+    return $(this).is(":focus") || $(this).is(":hover");
+  }).length > 0;
+
+  if (anyActive) return;
+
+  $el.parent().children(":first-child").clearQueue();
+  $el.parent().children(":first-child").animate({
     height: "0",   
   }, animation_speed );
+}
+
+$(".row > .box").hover(
+  function(){ showPreview($(this)); },
+  function(){ hidePreview($(this)); }
+);
+
+$(".row > .box").on("focus", function() {
+  showPreview($(this));
+}).on("blur", function() {
+  hidePreview($(this));
+}).on("keydown", function(e) {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    $(this).click();
+  }
 });
 $('.row > div:first-child').hover(
 function(){
