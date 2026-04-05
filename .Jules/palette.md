@@ -1,0 +1,3 @@
+## 2026-04-05 - Improving Accessibility in Legacy jQuery Galleries
+**Learning:** Legacy jQuery plugins often rely exclusively on hover events for interactive previews, which makes them inaccessible to keyboard users and screen readers. Non-semantic elements (like divs) used as gallery items lack essential roles, focusability, and descriptive labels.
+**Action:** When working with such components, refactor hover logic into shared internal functions to easily attach to 'focus' and 'blur' events. Explicitly assign 'role="link"', 'tabindex="0"', and dynamic 'aria-label' attributes during initialization. Implement a 'keydown' listener to handle 'Enter' and 'Space' keys to ensure keyboard interaction consistency with mouse clicks.
