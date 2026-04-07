@@ -1,0 +1,3 @@
+## 2024-05-23 - Keyboard Accessibility for Legacy Interactive Divs
+**Learning:** Legacy components often use `div` elements with jQuery `click` handlers for navigation, which are invisible to keyboard users and screen readers. Simply adding a click handler is insufficient for a modern web experience.
+**Action:** When encountering interactive non-semantic elements, always assign `role="link"` (or `role="button"`), `tabindex="0"`, and a dynamic `aria-label`. Synchronize `hover` animations with `focus` events by refactoring visual state logic into shared internal functions (e.g., `activateBox`/`deactivateBox`).
