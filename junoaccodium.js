@@ -46,6 +46,14 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr("role", "link");
+		$(this).attr("tabindex", "0");
+		var destination = $(this).attr("url");
+		var label = $(this).text().trim() || "Gallery item";
+		if (destination) {
+			label += " - Link to " + destination;
+		}
+		$(this).attr("aria-label", label);
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,23 +68,34 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
-	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
+
+function activateBox(el) {
+  var $el = $(el);
+  var $mainImg = $el.parent().children(":first-child");
+  $mainImg.clearQueue();
+  $el.css("border",border_hover+"px solid "+border_color);
+  $el.css("margin",margin_hover);
+  $mainImg.animate({ height: imgheight, opacity: 1 }, animation_speed);
+  $mainImg.css('background-image',"url('"+$el.attr('big')+"')");
+}
+
+function deactivateBox(el) {
+  var $el = $(el);
+  var $mainImg = $el.parent().children(":first-child");
+  $mainImg.clearQueue();
+  $el.css("border",border_before+"px solid "+border_color);
+  $el.css("margin",margin_before);
+  $mainImg.animate({ height: "0" }, animation_speed);
+}
+
+$(".row > .box").hover(function(){ activateBox(this); }, function(){ deactivateBox(this); });
+$(".row > .box").on("focus", function() { activateBox(this); });
+$(".row > .box").on("blur", function() { deactivateBox(this); });
+$(".row > .box").on("keydown", function(e) {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    $(this).click();
+  }
 });
 $('.row > div:first-child').hover(
 function(){
