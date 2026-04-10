@@ -1,0 +1,3 @@
+## 2025-05-14 - Accessible Gallery Navigation
+**Learning:** For legacy jQuery gallery components that use non-semantic elements (like divs) for navigation, it is critical to synchronize hover and focus events to ensure that keyboard users receive the same visual feedback as mouse users. Additionally, providing dynamic ARIA labels and handling keyboard triggers (Enter/Space) on focusable divs transforms a decorative element into a functional one for screen readers.
+**Action:** Always refactor mouse-only event logic into shared functions that can be bound to both hover and focus states, and ensure 'tabindex="0"' and 'role="link"' are applied to interactive non-semantic elements.
