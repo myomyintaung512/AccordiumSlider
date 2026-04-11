@@ -1,0 +1,3 @@
+## 2025-05-15 - Enhancing Legacy jQuery Gallery Accessibility
+**Learning:** Legacy jQuery sliders often rely on hover events and non-semantic divs, making them inaccessible to keyboard and screen reader users. Synchronizing visual states between 'hover' and 'focus' ensures a consistent experience across different input methods.
+**Action:** Always refactor hover/focus logic into shared functions (e.g., activateBox/deactivateBox) and assign 'role="link"' and 'tabindex="0"' to non-semantic interactive elements. Include a keydown listener for 'Enter' and 'Space' to ensure keyboard activation mirrors click behavior.

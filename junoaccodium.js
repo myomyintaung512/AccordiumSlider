@@ -60,23 +60,42 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
-	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
+function activateBox(element) {
+	$(element).parent().children(":first-child").clearQueue();
+	$(element).css("border", border_hover + "px solid " + border_color);
+	$(element).css("margin", margin_hover);
+	$(element).parent().children(":first-child").animate({
+		height: imgheight,
+		opacity: 1,
+	}, animation_speed);
+	$(element).parent().children(":first-child").css('background-image', "url('" + $(element).attr('big') + "')");
+}
+
+function deactivateBox(element) {
+	$(element).parent().children(":first-child").clearQueue();
+	$(element).css("border", border_before + "px solid " + border_color);
+	$(element).css("margin", margin_before);
+	$(element).parent().children(":first-child").animate({
+		height: "0",
+	}, animation_speed);
+}
+
+$(".row > .box").hover(function() {
+	activateBox(this);
+}, function() {
+	deactivateBox(this);
+}).on('focus', function() {
+	activateBox(this);
+}).on('blur', function() {
+	deactivateBox(this);
+}).on('keydown', function(e) {
+	if (e.key === 'Enter' || e.key === ' ') {
+		e.preventDefault();
+		$(this).click();
+	}
+}).attr('role', 'link').attr('tabindex', '0').each(function() {
+	var label = $(this).text().trim() || $(this).attr('url') || 'item';
+	$(this).attr('aria-label', label);
 });
 $('.row > div:first-child').hover(
 function(){
