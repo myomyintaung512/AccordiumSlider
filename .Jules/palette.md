@@ -1,0 +1,3 @@
+## 2026-04-12 - Synchronizing Hover and Focus Events
+**Learning:** In legacy components where interactivity is built using non-semantic elements (like divs) and jQuery events, it's crucial to synchronize `hover` logic with `focus` events to ensure that keyboard users receive the same visual feedback as mouse users. Using shared helper functions (like `activateBox`/`deactivateBox`) helps maintain consistency across different interaction triggers.
+**Action:** When refactoring legacy UI components for accessibility, always abstract visual state changes into reusable functions and bind them to both pointer and keyboard events.
