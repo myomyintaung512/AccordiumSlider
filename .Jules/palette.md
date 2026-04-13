@@ -1,0 +1,3 @@
+## 2025-04-13 - Syncing Hover and Focus in Legacy jQuery Components
+**Learning:** In legacy components where interactivity is built using `div` elements and jQuery `.hover()`, adding keyboard accessibility requires manually synchronizing `focus`/`blur` events with `mouseenter`/`mouseleave`. Without this, keyboard users don't see the same visual feedback (e.g., image expansions) that mouse users experience.
+**Action:** Always replace `.hover(in, out)` with `.on('mouseenter focus', in).on('mouseleave blur', out)` and ensure non-semantic interactive elements receive `tabindex="0"`, `role="link"`, and a keyboard listener for `Enter`/`Space`.
