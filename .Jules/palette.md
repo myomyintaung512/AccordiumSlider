@@ -1,0 +1,3 @@
+## 2025-05-15 - Synchronizing Keyboard Focus with Hover Animations
+**Learning:** In legacy jQuery galleries that use hover-triggered preview animations, keyboard users are often left in the dark. Synchronizing 'focus' and 'blur' events with the same animation logic as 'hover' ensures a consistent experience for all users. Extracting this logic into shared functions (e.g., `activateBox`/`deactivateBox`) prevents code duplication and ensures that visual states remain in sync regardless of the input method.
+**Action:** When adding keyboard support to interactive components with complex visual transitions, always refactor the transition logic into shared internal functions to be used by both mouse and keyboard event listeners.
