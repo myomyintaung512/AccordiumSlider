@@ -1,0 +1,3 @@
+## 2025-05-14 - Synchronizing Keyboard and Mouse Interactions in Legacy jQuery Galleries
+**Learning:** In legacy jQuery components where animations are bound directly to hover events, refactoring the animation logic into shared internal functions (e.g., `activateBox`/`deactivateBox`) is essential for cleanly adding support for `focus`/`blur` and `keydown` events without duplicating code or creating race conditions.
+**Action:** When encountering legacy event-driven UI, first refactor the visual state changes into named functions before adding accessibility listeners to ensure consistent behavior across all input methods.
