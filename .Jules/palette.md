@@ -1,0 +1,3 @@
+## 2024-05-23 - Retrofitting Accessibility in Legacy jQuery Plugins
+**Learning:** Legacy UI components that use non-semantic elements (like divs) and handle interactions via hover/click are invisible to keyboard and screen reader users. These can be effectively retrofitted by injecting `tabindex`, `role`, and `aria-label` during initialization and synchronizing `focus` events with existing animation logic.
+**Action:** When working with legacy jQuery sliders or galleries, always refactor interaction handlers into shared internal functions to easily bind both `hover` and `focus` events for consistent visual feedback across all input methods.
