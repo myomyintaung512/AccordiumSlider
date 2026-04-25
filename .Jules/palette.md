@@ -1,0 +1,3 @@
+## 2025-05-14 - Keyboard Accessibility in Legacy jQuery Galleries
+**Learning:** In legacy components where interactivity is built on `hover`, adding keyboard accessibility requires more than just `tabindex`. To prevent flickering when tabbing between items in a shared container, `focusin` and `focusout` should be used with a small debounce/delay logic similar to `mouseenter`/`mouseleave`. This ensures the container state remains stable during rapid focus shifts.
+**Action:** Always pair `hover` logic with `focusin`/`focusout` and implement a shared timer/debounce mechanism for container-level visual state changes.
