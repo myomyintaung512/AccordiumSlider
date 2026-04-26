@@ -31,6 +31,47 @@ var margin_hover=0;
 
 $(document).ready(function(){
 var margin_before=border_hover-border_before;
+var rowTimers = {};
+
+function act(box) {
+	var row = box.parent();
+	var rowIndex = $(".row").index(row);
+	if (rowTimers[rowIndex]) {
+		clearTimeout(rowTimers[rowIndex]);
+		delete rowTimers[rowIndex];
+	}
+	var preview = row.children(":first-child");
+	preview.clearQueue();
+	row.find(".box").css({
+		"border": border_before + "px solid " + border_color,
+		"margin": margin_before
+	});
+	box.css("border", border_hover + "px solid " + border_color);
+	box.css("margin", margin_hover);
+	preview.animate({
+		height: imgheight,
+		opacity: 1,
+	}, animation_speed);
+	preview.css("background-image", "url('" + box.attr("big") + "')");
+}
+
+function deact(box) {
+	var row = box.parent();
+	var rowIndex = $(".row").index(row);
+	if (rowTimers[rowIndex]) clearTimeout(rowTimers[rowIndex]);
+	rowTimers[rowIndex] = setTimeout(function() {
+		var preview = row.children(":first-child");
+		preview.clearQueue();
+		row.find(".box").css({
+			"border": border_before + "px solid " + border_color,
+			"margin": margin_before
+		});
+		preview.animate({
+			height: "0",
+		}, animation_speed);
+	}, 50);
+}
+
 
 $(".gallery").css("overflow","hidden");
 if(align=="center"){
@@ -46,6 +87,10 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr("tabindex", "0");
+		$(this).attr("role", "link");
+		var label = $(this).text().trim() || $(this).attr("url") || "item";
+		$(this).attr("aria-label", label);
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,24 +105,22 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
-	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
+$(".row > .box").on("mouseenter mouseleave focusin focusout click keydown", function(e) {
+	var $this = $(this);
+	if (e.type === "mouseenter" || e.type === "focusin") {
+		act($this);
+	} else if (e.type === "mouseleave" || e.type === "focusout") {
+		deact($this);
+	} else if (e.type === "click") {
+		window.location = $this.attr("url");
+	} else if (e.type === "keydown") {
+		if (e.key === "Enter" || e.key === " ") {
+			e.preventDefault();
+			$this.click();
+		}
+	}
 });
+
 $('.row > div:first-child').hover(
 function(){
  $(this).clearQueue();
@@ -101,6 +144,4 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
 });
