@@ -1,0 +1,3 @@
+## 2025-03-24 - Accessible Keyboard Navigation for Custom Interactive Elements
+**Learning:** Legacy jQuery components often use non-semantic elements (like `div`) for interactivity, which are invisible to screen readers and keyboard users. Retrofitting these requires: 1) extracting mouse-driven animation logic into shared functions to ensure visual consistency for both hover and focus, 2) dynamically injecting `tabindex="0"`, `role="link"`, and `aria-label` during initialization, and 3) handling both `focusin/focusout` and `keydown` (Enter/Space) to mirror mouse clicks.
+**Action:** Always check for `div` or `span` elements with click handlers and ensure they are promoted to full keyboard-accessible interactive components using ARIA roles and tab indices.
