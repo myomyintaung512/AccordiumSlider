@@ -1,0 +1,3 @@
+## 2026-05-02 - Persisting Focus Indicators During Hybrid Interactions
+**Learning:** In legacy jQuery components where both mouse (hover) and keyboard (focus) events trigger the same visual expansion, a naive "mouseleave" or "focusout" handler can prematurely remove the focus indicator. This happens when a user moves the mouse over a keyboard-focused element and then away; the mouseleave event triggers the deactivation logic regardless of the focus state.
+**Action:** Use a combination of jQuery `.data()` flags (to track hover state) and explicit `.is(":focus")` checks within a debounced deactivation function. This ensures the component only collapses and removes focus outlines when neither a hover nor a focus state exists.
