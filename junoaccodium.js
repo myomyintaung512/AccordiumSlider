@@ -30,77 +30,84 @@ var border_color="red";
 var margin_hover=0;
 
 $(document).ready(function(){
-var margin_before=border_hover-border_before;
+	var margin_before=border_hover-border_before;
 
-$(".gallery").css("overflow","hidden");
-if(align=="center"){
-$(".gallery").css("margin","0 auto");}
-var child = $(".gallery > div").get();
+	$(".gallery").css("overflow","hidden");
+	if(align=="center"){
+		$(".gallery").css("margin","0 auto");
+	}
+	var child = $(".gallery > div").get();
 
-$(child).each(function() {
+	var rowTimers = {};
+	function act(el) {
+		var $el = $(el), $parent = $el.parent(), idx = $parent.index('.row');
+		if (rowTimers[idx]) { clearTimeout(rowTimers[idx]); delete rowTimers[idx]; }
+		$el.css({ "border": border_hover + "px solid " + border_color, "margin": margin_hover });
+		if ($el.is(":focus")) $el.css("outline", "2px solid " + border_color);
+		$parent.children(":first-child").clearQueue().css('background-image', "url('" + $el.attr('big') + "')").animate({ height: imgheight, opacity: 1 }, animation_speed);
+	}
+	function deact(el) {
+		var $el = $(el), $parent = $el.parent(), idx = $parent.index('.row');
+		$el.css({ "border": border_before + "px solid " + border_color, "margin": margin_before, "outline": "none" });
+		rowTimers[idx] = setTimeout(function() {
+			var active = false;
+			$parent.children(".box").each(function() { if ($(this).data("hovering") || $(this).is(":focus")) active = true; });
+			if (!active) $parent.children(":first-child").clearQueue().animate({ height: "0" }, animation_speed);
+		}, 50);
+	}
+
+	$(child).each(function() {
 		$('<img/>')[0].src = $(this).attr("big");
-		$(this).css('background-image',"url("+$(this).attr('small')+")");
-		$(this).css('float',"left");
-		$(this).css('width',box_width+"px");
-		$(this).css('height',box_height+"px");
-		$(this).css("border",border_before+"px solid "+border_color); 
-		$(this).css("margin",margin_before);
-		$(this).addClass("box");
+		$(this).css({
+			'background-image': "url(" + $(this).attr('small') + ")",
+			'float': "left",
+			'width': box_width + "px",
+			'height': box_height + "px",
+			"border": border_before + "px solid " + border_color,
+			"margin": margin_before
+		}).addClass("box").attr({
+			"tabindex": "0",
+			"role": "link",
+			"aria-label": $(this).text().trim() || $(this).attr("url") || "item"
+		});
 	});
-		 var row_wreapper=$('.gallery');
-        while(child.length)
-        {
-            var grp=child.splice(0, items_pre_row);
-            var row=$('<div class="row"></div>');
-			
-            $(grp).each(function(){
-                row.append($(this));
-            });
-            row_wreapper.append(row);
-        }
-$('.gallery > .row').prepend('<div class="main-img"></div>');
-$('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
-	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
-});
-$('.row > div:first-child').hover(
-function(){
- $(this).clearQueue();
-  $(this).animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed );
-},
-function(){
-$(this).clearQueue();
-$(this).animate({
-    height: "0",
-    opacity: 0.3,
-  }, animation_speed );
-}
-);
-$(".gallery").css("width", (($(".box").outerWidth()+(margin_before*2))*items_pre_row)+"px");
-$(".gallery .row, .gallery .row > div:first-child").css("overflow","hidden");
-$(".gallery > .row > .box, .gallery > .row > .main-img").css("border-radius",border_radius); 
-$(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius",border_radius); 
-$(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
-$(".gallery > .row > .main-img").css("background-position","center center"); 
-$(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
+
+	var row_wreapper = $('.gallery');
+	while (child.length) {
+		var grp = child.splice(0, items_pre_row);
+		var row = $('<div class="row"></div>');
+		$(grp).each(function() {
+			row.append($(this));
+		});
+		row_wreapper.append(row);
+	}
+
+	$('.gallery > .row').prepend('<div class="main-img"></div>');
+
+	$(".gallery").on("mouseenter focusin", ".box", function() {
+		$(this).data("hovering", true);
+		act(this);
+	}).on("mouseleave focusout", ".box", function() {
+		$(this).data("hovering", false);
+		deact(this);
+	}).on("keydown", ".box", function(e) {
+		if (e.which == 13) window.location = $(this).attr('url');
+	}).on("mouseenter", ".main-img", function() {
+		var idx = $(this).parent().index('.row');
+		if (rowTimers[idx]) { clearTimeout(rowTimers[idx]); delete rowTimers[idx]; }
+		$(this).clearQueue().animate({ height: imgheight, opacity: 1 }, animation_speed);
+	}).on("mouseleave", ".main-img", function() {
+		$(this).clearQueue().animate({ height: "0", opacity: 0.3 }, animation_speed);
+	});
+
+	$(".gallery").css("width", (($(".box").outerWidth() + (margin_before * 2)) * items_pre_row) + "px");
+	$(".gallery .row, .gallery .row > div:first-child").css("overflow", "hidden");
+	$(".gallery > .row > .box, .gallery > .row > .main-img").css("border-radius", border_radius);
+	$(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius", border_radius);
+	$(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius", border_radius);
+	$(".gallery > .row > .main-img").css("background-position", "center center");
+	$(".gallery > .row > .main-img").css("background-size", "100%");
+	$(".gallery > .row > .box").click(function() {
+		window.location = $(this).attr('url');
+	});
 });
