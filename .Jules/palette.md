@@ -1,0 +1,3 @@
+## 2026-05-06 - Debounced Focus/Hover Sync for Shared Interactive Containers
+**Learning:** In galleries where multiple items share a single preview area, synchronizing focus and hover events requires a small debounce timer (e.g., 50ms) to prevent visual flickering when moving between sibling elements.
+**Action:** Use container-specific timers to check the focus and hover state of all sibling elements before deactivating shared UI components.
