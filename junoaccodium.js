@@ -45,7 +45,13 @@ $(child).each(function() {
 		$(this).css('height',box_height+"px");
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
+		$(this).css("outline", "none");
 		$(this).addClass("box");
+		$(this).attr("tabindex", "0");
+		$(this).attr("role", "link");
+		if (!$(this).text().trim()) {
+			$(this).attr("aria-label", $(this).attr("url") || "gallery item");
+		}
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,23 +66,43 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
-	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
+
+function act(el) {
+	$(el).parent().children(":first-child").clearQueue();
+	$(el).css("border", border_hover + "px solid " + border_color);
+	$(el).css("margin", margin_hover);
+	if ($(el).is(":focus")) {
+		$(el).css("outline", "3px solid " + border_color);
+	}
+	$(el).parent().children(":first-child").animate({
+		height: imgheight,
+		opacity: 1,
+	}, animation_speed);
+	$(el).parent().children(":first-child").css('background-image', "url('" + $(el).attr('big') + "')");
+}
+
+function deact(el) {
+	$(el).parent().children(":first-child").clearQueue();
+	$(el).css("border", border_before + "px solid " + border_color);
+	$(el).css("margin", margin_before);
+	$(el).css("outline", "none");
+	$(el).parent().children(":first-child").animate({
+		height: "0",
+	}, animation_speed);
+}
+
+$(".row > .box").hover(function() {
+	act(this);
+}, function() {
+	deact(this);
+}).on("focusin", function() {
+	act(this);
+}).on("focusout", function() {
+	deact(this);
+}).on("keydown", function(e) {
+	if (e.which == 13) {
+		window.location = $(this).attr('url');
+	}
 });
 $('.row > div:first-child').hover(
 function(){
