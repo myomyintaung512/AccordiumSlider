@@ -1,0 +1,3 @@
+## 2026-05-09 - [Keyboard Navigation & Focus Indicators]
+**Learning:** In legacy jQuery galleries, combining mouse and keyboard events (mouseenter/focusin) into a single handler using `.on()` is an efficient way to implement accessible interactions while keeping code changes minimal. Using the event type (`e.type`) allows for conditional logic like applying focus-specific outlines without duplicating animation code.
+**Action:** Use `.on("mouseenter focusin", function(e) { ... })` and check `e.type === "focusin"` for focus-only visual feedback to ensure a smooth, accessible experience with surgical code changes.
