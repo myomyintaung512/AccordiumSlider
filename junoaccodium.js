@@ -46,6 +46,9 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr("role", "link").attr("tabindex", "0");
+		var label = $(this).text().replace(/\s+/g, ' ').trim() || $(this).attr("url") || "item";
+		$(this).attr("aria-label", label);
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -59,24 +62,25 @@ $(child).each(function() {
             row_wreapper.append(row);
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
-$('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
+$(".row > .box").on('mouseenter focusin', function(e){
+	if (e.type === 'focusin') {
+		$(this).data('focused', true);
+		$(this).css("outline", "3px solid " + border_color);
+	}
+	$(this).parent().children(":first-child").clearQueue();
+	$(this).css("border",border_hover+"px solid "+border_color).css("margin",margin_hover);
+	$(this).parent().children(":first-child").animate({height: imgheight, opacity: 1}, animation_speed );
 	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
+}).on('mouseleave focusout', function(e){
+	if (e.type === 'focusout') {
+		$(this).data('focused', false);
+		$(this).css("outline", "none");
+	}
+	if ($(this).is(':hover') || $(this).data('focused')) return;
+	$(this).parent().children(":first-child").clearQueue().animate({height: "0"}, animation_speed );
+	$(this).css("border",border_before+"px solid "+border_color).css("margin",margin_before);
+}).on('keydown', function(e){
+	if (e.which == 13) { e.preventDefault(); window.location = $(this).attr('url'); }
 });
 $('.row > div:first-child').hover(
 function(){
