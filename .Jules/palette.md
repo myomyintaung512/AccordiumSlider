@@ -1,0 +1,3 @@
+## 2026-05-12 - Synchronizing Mouse and Keyboard States in Legacy jQuery Galleries
+**Learning:** In galleries where visual expansion is shared among sibling elements (e.g., a shared preview area), simply adding focus events can cause flickering if mouse and keyboard states are not synchronized. Using jQuery `.data()` to track a `focused` state allows for clean deactivation logic that respects both interaction methods.
+**Action:** When adding keyboard accessibility to hover-based components, use state flags (like `.data('focused', true)`) to ensure the 'deactivate' animation only runs when the element is neither hovered nor focused.
