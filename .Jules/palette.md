@@ -1,0 +1,3 @@
+## 2026-05-13 - [Accessibility: Keyboard Focus in Dynamic Galleries]
+**Learning:** In galleries where visual expansion (like an accordion or slider) is triggered by hover, it is critical to also bind these animations to `focusin` and `focusout` events. Without this, keyboard users are excluded from the primary visual feedback of the interface. Additionally, using `role="link"` and `tabindex="0"` on non-interactive elements (like `div`s used as buttons) must be accompanied by a `keydown` handler for the 'Enter' key to maintain standard navigation expectations.
+**Action:** Always synchronize hover and focus event handlers for interactive components, and ensure custom interactive elements mimic native behavior for both focus visibility and activation keys.
