@@ -46,6 +46,9 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr('tabindex', '0').attr('role', 'link');
+		var label = $(this).text().replace(/\s+/g, ' ').trim() || $(this).attr('url') || 'item';
+		$(this).attr('aria-label', label);
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,23 +63,36 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
+$(".row > .box").on('mouseenter focusin', function(e){
+	$(this).parent().children(":first-child").clearQueue();
+	$(this).css("border",border_hover+"px solid "+border_color);
+	$(this).css("margin",margin_hover);
+	if (e.type === 'focusin') {
+		$(this).data('focused', true);
+		$(this).css('outline', '3px solid ' + border_color);
+	}
+	$(this).parent().children(":first-child").animate({
+		height: imgheight,
+		opacity: 1,
+	}, animation_speed );
 	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
+}).on('mouseleave focusout', function(e){
+	if (e.type === 'focusout') {
+		$(this).data('focused', false);
+		$(this).css('outline', 'none');
+	}
+	if (!$(this).data('focused')) {
+		$(this).parent().children(":first-child").clearQueue();
+		$(this).css("border",border_before+"px solid "+border_color);
+		$(this).css("margin",margin_before);
+		$(this).parent().children(":first-child").animate({
+			height: "0",
+		}, animation_speed );
+	}
+}).on('keydown', function(e) {
+	if (e.key === 'Enter' && $(this).attr('url')) {
+		window.location = $(this).attr('url');
+	}
 });
 $('.row > div:first-child').hover(
 function(){
