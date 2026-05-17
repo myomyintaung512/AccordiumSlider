@@ -45,6 +45,10 @@ $(child).each(function() {
 		$(this).css('height',box_height+"px");
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
+		$(this).css("cursor","pointer");
+		$(this).attr({"tabindex":"0","role":"link"});
+		var label = $(this).text().replace(/\s+/g, ' ').trim() || $(this).attr("url") || "item";
+		if (!$(this).text().trim()) $(this).attr("aria-label", label);
 		$(this).addClass("box");
 	});
 		 var row_wreapper=$('.gallery');
@@ -59,8 +63,9 @@ $(child).each(function() {
             row_wreapper.append(row);
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
-$('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
+$(".row > .box").on("mouseenter focusin", function(e){
+ if (e.type === "focusin") $(this).data("focused", true);
+ if ($(this).data("focused")) $(this).css("outline", border_hover+"px solid "+border_color);
  $(this).parent().children(":first-child").clearQueue();
  $(this).css("border",border_hover+"px solid "+border_color); 
  $(this).css("margin",margin_hover);
@@ -69,14 +74,20 @@ $(".row > .box").hover(function(){
     opacity: 1,
   }, animation_speed ); 
 	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
+}).on("mouseleave focusout", function(e){
+ if (e.type === "focusout") {
+  $(this).data("focused", false);
+  $(this).css("outline", "none");
+ }
+ if ($(this).data("focused")) return;
 $(this).parent() .children(":first-child").clearQueue();
 $(this).css("border",border_before+"px solid "+border_color); 
 $(this).css("margin",margin_before); 
 $(this).parent() .children(":first-child").animate({
     height: "0",   
   }, animation_speed );
+}).on("click keydown", function(e){
+ if ((e.type === "click" || e.key === "Enter") && $(this).attr("url")) window.location = $(this).attr("url");
 });
 $('.row > div:first-child').hover(
 function(){
@@ -101,6 +112,4 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
 });
