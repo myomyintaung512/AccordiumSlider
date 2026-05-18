@@ -1,0 +1,3 @@
+## 2026-05-18 - Retrofitting Keyboard Accessibility to Hover-Centric Galleries
+**Learning:** Legacy jQuery galleries often rely on `.hover()` which ignores keyboard users. By refactoring to `.on('mouseenter focusin')` and `.on('mouseleave focusout')`, and using `.data()` flags to track the 'focused' state, we can synchronize complex UI transitions (like height animations) across both input methods without causing flickering or race conditions.
+**Action:** Always prefer delegated focus events (`focusin`/`focusout`) over `.focus()`/`.blur()` in jQuery to ensure event bubbling and consistent behavior when interacting with nested elements within an interactive container.

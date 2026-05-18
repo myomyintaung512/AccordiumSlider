@@ -46,6 +46,9 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr("role", "link").attr("tabindex", "0");
+		var label = $(this).text().replace(/\s+/g, ' ').trim() || $(this).attr("url") || "item";
+		$(this).attr("aria-label", label);
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,7 +63,7 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
+$(".row > .box").on('mouseenter focusin', function(){
  $(this).parent().children(":first-child").clearQueue();
  $(this).css("border",border_hover+"px solid "+border_color); 
  $(this).css("margin",margin_hover);
@@ -69,8 +72,7 @@ $(".row > .box").hover(function(){
     opacity: 1,
   }, animation_speed ); 
 	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
+}).on('mouseleave focusout', function(){
 $(this).parent() .children(":first-child").clearQueue();
 $(this).css("border",border_before+"px solid "+border_color); 
 $(this).css("margin",margin_before); 
@@ -78,22 +80,19 @@ $(this).parent() .children(":first-child").animate({
     height: "0",   
   }, animation_speed );
 });
-$('.row > div:first-child').hover(
-function(){
+$('.row > div:first-child').on('mouseenter focusin', function(){
  $(this).clearQueue();
   $(this).animate({
     height: imgheight,
     opacity: 1,
   }, animation_speed );
-},
-function(){
+}).on('mouseleave focusout', function(){
 $(this).clearQueue();
 $(this).animate({
     height: "0",
     opacity: 0.3,
   }, animation_speed );
-}
-);
+});
 $(".gallery").css("width", (($(".box").outerWidth()+(margin_before*2))*items_pre_row)+"px");
 $(".gallery .row, .gallery .row > div:first-child").css("overflow","hidden");
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("border-radius",border_radius); 
@@ -102,5 +101,10 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-rad
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
 $(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
+  window.location = $(this).attr('url'); }).on('keydown', function(e){
+  if (e.key === 'Enter') {
+    var url = $(this).attr('url');
+    if (url) window.location = url;
+  }
+});
 });
