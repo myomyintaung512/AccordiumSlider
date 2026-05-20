@@ -1,0 +1,3 @@
+## 2026-05-20 - Keyboard Accessibility for Shared-Preview Galleries
+**Learning:** In galleries where multiple items share a single preview container (like an accordion or this slider), implementing keyboard focus support requires careful state management. Using simple `focusin/focusout` can cause flickering if the user interacts with both mouse and keyboard. Tracking both `hovered` and `focused` states via `.data()` ensures the preview stays expanded as long as any interaction is active.
+**Action:** Use dual-state flags (`hovered` and `focused`) and check both before triggering deactivation animations in shared-preview components.
