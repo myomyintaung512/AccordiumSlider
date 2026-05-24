@@ -1,0 +1,3 @@
+## 2026-05-24 - [Synchronizing Keyboard and Mouse Interactions in Legacy jQuery]
+**Learning:** In legacy jQuery environments (like 1.8.1), refactoring `.hover()` into chained `.on('mouseenter focusin', ...)` and `.on('mouseleave focusout', ...)` handlers combined with state tracking via `.data()` flags (e.g., 'focused', 'hovered') is essential. This prevents visual flickering and race conditions, ensuring that shared UI components (like preview panes) only deactivate when *both* interaction methods are inactive.
+**Action:** Use `.data()` to maintain persistent interaction state flags and coordinate deactivation logic across different event types for a smoother micro-UX.
