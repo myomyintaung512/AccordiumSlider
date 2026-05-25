@@ -1,0 +1,3 @@
+## 2026-05-25 - [Accessibility for Custom Interactive Elements]
+**Learning:** Custom interactive elements (like `div` boxes in a gallery) are invisible to keyboard and screen reader users by default. To make them accessible, they require `tabindex="0"`, an appropriate ARIA `role` (e.g., "link" or "button"), and a descriptive `aria-label`. Furthermore, visual interaction states must be triggered by both mouse and keyboard events (e.g., using `focusin`/`focusout` alongside `mouseenter`/`mouseleave`).
+**Action:** Always include focusability, roles, labels, and synchronized event handlers when creating or refactoring custom interactive components.
