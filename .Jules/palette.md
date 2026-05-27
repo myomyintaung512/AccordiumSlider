@@ -1,0 +1,3 @@
+## 2025-05-15 - [Synchronizing Hover and Focus in Legacy jQuery]
+**Learning:** In legacy apps where UI expansion is triggered by mouse events on non-semantic elements, adding keyboard support requires more than just binding `focus`. To prevent flickering and race conditions during interaction transitions, interaction states should be tracked using persistent flags (e.g., jQuery `.data()`). This allows deactivation logic to be conditional on both states being false, ensuring the UI remains stable when a user moves from mouse to keyboard or vice versa.
+**Action:** Use `focusin`/`focusout` for bubbling focus events and coordinate UI deactivation with state flags rather than simple event toggles.
