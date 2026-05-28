@@ -1,0 +1,3 @@
+## 2025-05-14 - Retrofitting Accessibility in Legacy jQuery Gallery
+**Learning:** Legacy jQuery plugins that use `.hover()` can be easily retrofitted for keyboard accessibility by switching to `.on('mouseenter focusin', ...)` and `.on('mouseleave focusout', ...)`. However, care must be taken to manage state (e.g., using `.data()`) if deactivation should only happen when BOTH mouse and focus have left the element, avoiding visual flickering during transitions.
+**Action:** Always prefer chained `.on()` with multiple event types over `.hover()` for interactive components, and use `.data()` flags to coordinate state between different interaction methods.
