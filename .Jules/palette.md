@@ -1,0 +1,3 @@
+## 2026-05-30 - Keyboard Accessibility for Shared-Preview Galleries
+**Learning:** In shared-preview galleries (where multiple items share a single expansion area), simple focus/blur handlers cause visual flickering when navigating. Using dual 'hovered' and 'focused' data flags on each item allows for synchronized state management, ensuring the preview area remains active as long as the user is interacting with the item via either method.
+**Action:** Always implement a state-tracking mechanism (like jQuery .data() or React state) to coordinate mouse and keyboard events for components with shared visual states.
