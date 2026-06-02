@@ -46,6 +46,14 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr("role", "link");
+		$(this).attr("tabindex", "0");
+		var label = $(this).text().replace(/\s+/g, ' ').trim();
+		if (!label) {
+			var idMatch = $(this).attr("big").match(/(\d+)/);
+			label = "Gallery item " + (idMatch ? idMatch[1] : "");
+		}
+		$(this).attr("aria-label", label);
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,7 +68,7 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
+$(".row > .box").on('mouseenter focusin', function(){
  $(this).parent().children(":first-child").clearQueue();
  $(this).css("border",border_hover+"px solid "+border_color); 
  $(this).css("margin",margin_hover);
@@ -69,8 +77,7 @@ $(".row > .box").hover(function(){
     opacity: 1,
   }, animation_speed ); 
 	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
+}).on('mouseleave focusout', function(){
 $(this).parent() .children(":first-child").clearQueue();
 $(this).css("border",border_before+"px solid "+border_color); 
 $(this).css("margin",margin_before); 
@@ -101,6 +108,9 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
+$(".gallery > .row > .box").on('click keydown', function(e){
+  if (e.type === 'click' || e.which === 13) {
+    window.location = $(this).attr('url');
+  }
+});
 });
