@@ -37,8 +37,9 @@ if(align=="center"){
 $(".gallery").css("margin","0 auto");}
 var child = $(".gallery > div").get();
 
-$(child).each(function() {
-		$('<img/>')[0].src = $(this).attr("big");
+$(child).each(function(index) {
+		var bigImg = $(this).attr("big");
+		if (bigImg) $('<img/>')[0].src = bigImg;
 		$(this).css('background-image',"url("+$(this).attr('small')+")");
 		$(this).css('float',"left");
 		$(this).css('width',box_width+"px");
@@ -46,6 +47,12 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		var text = $(this).text().replace(/\s+/g, ' ').trim();
+		if (!text) {
+			var idMatch = bigImg ? bigImg.match(/(\d+)-big/) : null;
+			$(this).attr("aria-label", "Gallery item " + (idMatch ? idMatch[1] : (index + 1)));
+		}
+		$(this).attr("role", "link").attr("tabindex", "0");
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,23 +67,48 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
+$(".row > .box").on('mouseenter focusin', function(e){
+	if (e.type === 'mouseenter') $(this).data('hovered', true);
+	if (e.type === 'focusin') $(this).data('focused', true);
+	$(this).parent().children(".box").each(function() {
+		if (this !== e.currentTarget) {
+			$(this).css("border",border_before+"px solid "+border_color).css("margin",margin_before);
+		}
+	});
+	$(this).parent().children(":first-child").clearQueue();
+	$(this).css("border",border_hover+"px solid "+border_color);
+	$(this).css("margin",margin_hover);
+	$(this).parent().children(":first-child").animate({
+		height: imgheight,
+		opacity: 1,
+	}, animation_speed );
 	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
+}).on('mouseleave focusout', function(e){
+	if (e.type === 'mouseleave') $(this).data('hovered', false);
+	if (e.type === 'focusout') {
+		if (e.relatedTarget && $(this).has(e.relatedTarget).length > 0) {
+			// Focus moved to a child element (like a link), don't set focused to false
+		} else {
+			$(this).data('focused', false);
+		}
+	}
+	var self = this;
+	setTimeout(function() {
+		if (!$(self).data('hovered') && !$(self).data('focused')) {
+			$(self).css("border",border_before+"px solid "+border_color);
+			$(self).css("margin",margin_before);
+			var anyActive = false;
+			$(self).parent().children(".box").each(function() {
+				if ($(this).data('hovered') || $(this).data('focused')) anyActive = true;
+			});
+			if (!anyActive) {
+				$(self).parent().children(":first-child").clearQueue();
+				$(self).parent().children(":first-child").animate({
+					height: "0",
+				}, animation_speed );
+			}
+		}
+	}, 10);
 });
 $('.row > div:first-child').hover(
 function(){
@@ -101,6 +133,10 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
+$(".gallery > .row > .box").on("click keydown", function(e) {
+	if (e.type === "click" || (e.type === "keydown" && e.which === 13)) {
+		var url = $(this).attr('url');
+		if (url) window.location = url;
+	}
+});
 });
