@@ -37,7 +37,7 @@ if(align=="center"){
 $(".gallery").css("margin","0 auto");}
 var child = $(".gallery > div").get();
 
-$(child).each(function() {
+$(child).each(function(i) {
 		$('<img/>')[0].src = $(this).attr("big");
 		$(this).css('background-image',"url("+$(this).attr('small')+")");
 		$(this).css('float',"left");
@@ -45,6 +45,16 @@ $(child).each(function() {
 		$(this).css('height',box_height+"px");
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
+		$(this).css("cursor","pointer");
+		$(this).attr("role","link");
+		$(this).attr("tabindex","0");
+		var text = $(this).text().replace(/\s+/g, ' ').trim();
+		if(!text){
+			var big = $(this).attr("big");
+			var match = big ? big.match(/(\d+)-big/) : null;
+			text = "Gallery item " + (match ? match[1] : (i + 1));
+		}
+		$(this).attr("aria-label", text);
 		$(this).addClass("box");
 	});
 		 var row_wreapper=$('.gallery');
@@ -59,8 +69,7 @@ $(child).each(function() {
             row_wreapper.append(row);
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
-$('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
+$(".row > .box").on('mouseenter focusin', function(){
  $(this).parent().children(":first-child").clearQueue();
  $(this).css("border",border_hover+"px solid "+border_color); 
  $(this).css("margin",margin_hover);
@@ -69,8 +78,7 @@ $(".row > .box").hover(function(){
     opacity: 1,
   }, animation_speed ); 
 	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
+}).on('mouseleave focusout', function(){
 $(this).parent() .children(":first-child").clearQueue();
 $(this).css("border",border_before+"px solid "+border_color); 
 $(this).css("margin",margin_before); 
@@ -102,5 +110,11 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-rad
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
 $(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
+  if($(this).attr('url')) window.location = $(this).attr('url');
+});
+$(".gallery > .row > .box").on('keydown', function(e){
+	if((e.which == 13 || e.keyCode == 13) && $(this).attr('url')){
+		window.location = $(this).attr('url');
+	}
+});
 });
