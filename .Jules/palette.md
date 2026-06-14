@@ -1,0 +1,3 @@
+## 2024-05-15 - Synchronized State Management in Shared-Preview Galleries
+**Learning:** In shared-preview components where multiple items trigger a single expansion area, tabbing between items or moving from mouse to keyboard focus can cause visual flickering or premature closing of the preview. This happens because the deactivation event (focusout/mouseleave) of the previous item may execute after the activation event of the next item.
+**Action:** Utilize dual state flags (`hovered`, `focused`) on each item and a micro-timeout debouncer on deactivation. Before executing a "collapse" animation, explicitly verify if any sibling elements in the container are still active to ensure the preview only closes when all interaction with the row has truly ceased.
