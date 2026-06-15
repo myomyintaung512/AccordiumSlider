@@ -1,0 +1,3 @@
+## 2026-06-15 - Keyboard Accessibility for Shared-Preview Galleries
+**Learning:** In galleries where multiple items share a single expansion/preview area, mouse-only interaction via `.hover()` prevents keyboard-only users from accessing the content. Using `.on('mouseenter focusin', ...)` and `.on('mouseleave focusout', ...)` combined with jQuery `.data()` flags (e.g., 'hovered', 'focused') allows for synchronized state management that prevents the preview from closing when the interaction method changes.
+**Action:** Always replace `.hover()` with combined mouse and focus listeners and use data flags to coordinate the active state, ensuring the UI remains expanded as long as either interaction is active.
