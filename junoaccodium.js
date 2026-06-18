@@ -46,6 +46,10 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr("tabindex", "0");
+		$(this).attr("role", "link");
+		var alt_text = $(this).text().replace(/\s+/g, ' ').trim() || ("Gallery item " + ($(this).attr("big").match(/(\d+)-big/) ? $(this).attr("big").match(/(\d+)-big/)[1] : ""));
+		$(this).attr("aria-label", alt_text);
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,23 +64,50 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
+$(".row > .box").on('mouseenter focusin', function(e){
+	var self = this;
+	if (e.type === 'focusin') $(this).data('focused', true);
+	if (e.type === 'mouseenter') $(this).data('hovered', true);
+	$(this).parent().children(":first-child").clearQueue();
+	$(this).css("border",border_hover+"px solid "+border_color);
+	$(this).css("margin",margin_hover);
+	$(this).parent().children(":first-child").animate({
+		height: imgheight,
+		opacity: 1,
+	}, animation_speed );
 	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
+
+	// Ensure other rows are closed when one becomes active
+	$(".row").not($(this).parent()).each(function(){
+		var rowAnyActive = false;
+		$(this).find(".box").each(function(){
+			if ($(this).data('focused') || $(this).data('hovered')) rowAnyActive = true;
+		});
+		if (!rowAnyActive) {
+			$(this).children(":first-child").clearQueue();
+			$(this).children(":first-child").animate({ height: "0" }, animation_speed);
+		}
+	});
+}).on('mouseleave focusout', function(e){
+	var self = this;
+	if (e.type === 'focusout') $(this).data('focused', false);
+	if (e.type === 'mouseleave') $(this).data('hovered', false);
+	setTimeout(function(){
+		var anyActive = false;
+		$(self).parent().find(".box").each(function(){
+			if ($(this).data('focused') || $(this).data('hovered')) anyActive = true;
+		});
+		if (!anyActive) {
+			$(self).parent().children(":first-child").clearQueue();
+			$(self).parent().children(":first-child").animate({
+				height: "0",
+			}, animation_speed );
+		}
+		if (!$(self).data('focused') && !$(self).data('hovered')) {
+			$(self).css("border",border_before+"px solid "+border_color);
+			$(self).css("margin",margin_before);
+		}
+	}, 10);
 });
 $('.row > div:first-child').hover(
 function(){
@@ -102,5 +133,9 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-rad
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
 $(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
+  window.location = $(this).attr('url'); }).on('keydown', function(e){
+	if (e.which == 13) {
+		window.location = $(this).attr('url');
+	}
+});
 });
