@@ -1,0 +1,3 @@
+## 2025-05-15 - Accessibility for div-based link components
+**Learning:** Legacy UI plugins often use `div` elements with custom attributes (like `url`) and click handlers to mimic links, which are completely inaccessible to keyboard and screen reader users. Simply adding `tabindex="0"` is not enough; one must also provide semantic roles (`role="link"`) and explicit `aria-label`s, especially when the `div` contains only background images or icon-only content.
+**Action:** Always inspect custom interactive elements for missing semantic attributes and ensure that all visual feedback (like hover expansions) is also wired to keyboard `focusin` events.
