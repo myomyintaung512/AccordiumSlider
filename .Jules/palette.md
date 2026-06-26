@@ -1,0 +1,3 @@
+## 2026-06-26 - [Accessibility] Enhancing Legacy jQuery Gallery for Keyboard Navigation
+**Learning:** Legacy jQuery plugins that use `div` elements for interactive items can be made accessible by adding `tabindex="0"`, `role="link"`, and descriptive `aria-label` attributes. Synchronizing hover and focus states using `mouseenter focusin` and `mouseleave focusout` ensures a consistent experience for both mouse and keyboard users.
+**Action:** Always use chained event listeners (`.on('mouseenter focusin', ...)`) for interactive elements to support keyboard focus alongside mouse hover. Ensure a fallback mechanism for `aria-label` when inner text is missing.
