@@ -1,0 +1,3 @@
+## 2026-06-28 - [Keyboard Accessibility for Custom jQuery Interactive Elements]
+**Learning:** Custom interactive elements (like <div> boxes acting as links) in legacy jQuery environments often lack keyboard support and appropriate ARIA attributes. Chaining focusin/focusout events with mouseenter/mouseleave provides a seamless experience for both mouse and keyboard users.
+**Action:** Always add tabindex="0" and role="link" (or "button") to custom interactive elements, and ensure focus events trigger the same visual states as hover events. Use e.which == 13 to handle Enter key navigation consistently in legacy environments.
