@@ -1,0 +1,3 @@
+## 2025-05-14 - Keyboard accessibility for custom gallery items
+**Learning:** Custom interactive elements (like `div` based gallery boxes) often lack basic accessibility. Adding `tabindex="0"`, `role="link"`, and an `aria-label` is essential. When handling keyboard 'Enter' keys, using `e.which === 13` is robust for legacy jQuery. Also, when boxes contain nested links, the parent's click/keydown handler should skip if the target is a link to avoid double-navigation.
+**Action:** Always ensure custom clickable containers are keyboard-reachable and provide semantic roles/labels. Check for nested interactive elements to prevent event handler conflicts.
