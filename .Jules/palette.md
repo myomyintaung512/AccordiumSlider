@@ -1,0 +1,3 @@
+## 2026-07-01 - Enhanced Keyboard Accessibility for Gallery Slider
+**Learning:** Legacy jQuery plugins often lack basic keyboard accessibility. Providing focusable containers (`tabindex="0"`), ARIA roles (`role="link"`), and descriptive labels significantly improves usability for screen reader and keyboard-only users. Using chained event handlers (`.on('mouseenter focusin', ...)`) and data flags allows for smooth, non-flickering transitions between mouse and keyboard interaction.
+**Action:** Always check if interactive elements are reachable via Tab and triggerable via Enter. Use ARIA labels to provide context for visually-driven components.
