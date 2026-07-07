@@ -1,0 +1,3 @@
+## 2025-05-14 - Accessible Gallery Focus Management
+**Learning:** When converting hover-only interactions to focus-friendly ones in a shared-preview gallery, simple event listeners aren't enough. Using separate state flags for 'hovered' and 'focused' combined with a micro-timeout (e.g., 10ms) prevents the UI from flickering or closing prematurely when the user transitions between input methods (mouse to keyboard). Additionally, clickable containers containing nested links require explicit target checks (e.g., `if ($(e.target).is('a')) return;`) to avoid redundant or conflicting navigation triggers.
+**Action:** Always implement robust state tracking and event bubbling guards when making container-level interactions accessible.
