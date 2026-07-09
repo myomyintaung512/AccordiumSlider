@@ -1,0 +1,3 @@
+## 2026-07-09 - Keyboard Navigation for Custom Galleries
+**Learning:** Custom interactive elements like the gallery boxes in mmDeveloperSlider are often implemented with only mouse listeners, making them inaccessible. In legacy jQuery environments, synchronizing mouse and keyboard focus state can be achieved by using chained `.on("mouseenter focusin", ...)` and `.on("mouseleave focusout", ...)` handlers.
+**Action:** Always check if interactive 'div' elements have `tabindex="0"`, an appropriate ARIA role, and descriptive `aria-label`. Ensure that any visual state change triggered by hover is also triggered by focus.
