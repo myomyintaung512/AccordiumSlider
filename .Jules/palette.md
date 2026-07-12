@@ -1,0 +1,3 @@
+## 2026-07-12 - [Improving Gallery Accessibility]
+**Learning:** Legacy jQuery components often lack basic keyboard accessibility. Transforming a hover-only gallery into a keyboard-navigable one requires adding `tabindex="0"`, `role="link"`, and mapping `focusin`/`focusout` events to the existing expansion logic. It's also critical to prevent parent interaction handlers from overriding nested link clicks/keypresses using `if ($(e.target).is('a')) return;`.
+**Action:** When working with custom interactive containers, always verify they are focusable, have semantic roles, and handle keyboard input (like Enter). Ensure event propagation is handled carefully to support nested interactive elements.
