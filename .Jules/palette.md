@@ -1,0 +1,3 @@
+## 2026-05-18 - Coordinated Interaction States for Shared Previews
+**Learning:** When multiple interactive elements (like gallery boxes and a shared expanded preview) control a single visual area, using independent 'hovered' or 'focused' flags coordinated via a debounced check is more robust than relying on simple entry/exit events. This prevents visual flickering and premature closure when transitioning between related elements or between mouse and keyboard interaction.
+**Action:** Use jQuery `.data()` to track state on individual elements and implement a centralized 'checkDeactivate' function with a small `setTimeout` to ensure the UI only collapses when all relevant triggers are inactive.
