@@ -37,7 +37,7 @@ if(align=="center"){
 $(".gallery").css("margin","0 auto");}
 var child = $(".gallery > div").get();
 
-$(child).each(function() {
+$(child).each(function(index) {
 		$('<img/>')[0].src = $(this).attr("big");
 		$(this).css('background-image',"url("+$(this).attr('small')+")");
 		$(this).css('float',"left");
@@ -46,6 +46,11 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr("tabindex", "0");
+		$(this).attr("role", "link");
+		var label = $(this).text().trim().replace(/\s+/g, ' ');
+		if (!label) label = 'Gallery item ' + (index + 1);
+		$(this).attr("aria-label", label);
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,40 +65,65 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
-	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
-});
-$('.row > div:first-child').hover(
-function(){
- $(this).clearQueue();
-  $(this).animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed );
-},
-function(){
-$(this).clearQueue();
-$(this).animate({
-    height: "0",
-    opacity: 0.3,
-  }, animation_speed );
+
+function activate(self) {
+	$(self).parent().children(":first-child").clearQueue();
+	$(self).css("border",border_hover+"px solid "+border_color);
+	$(self).css("margin",margin_hover);
+	$(self).parent().children(":first-child").animate({
+		height: imgheight,
+		opacity: 1,
+	}, animation_speed );
+	$(self).parent().children(":first-child").css('background-image',"url('"+$(self).attr('big')+"')");
 }
-);
+
+function deactivate(self) {
+	var $mainImg = $(self).parent().children(":first-child");
+	$mainImg.clearQueue();
+	$(self).css("border",border_before+"px solid "+border_color);
+	$(self).css("margin",margin_before);
+
+	setTimeout(function() {
+		var anyActive = false;
+		$(self).parent().find(".box").each(function() {
+			if ($(this).data("hovered") || $(this).data("focused")) {
+				anyActive = true;
+				return false;
+			}
+		});
+
+		if (!anyActive) {
+			$mainImg.animate({
+				height: "0",
+			}, animation_speed );
+		}
+	}, 10);
+}
+
+$(".row > .box").on('mouseenter focusin', function(e) {
+	if (e.type === 'mouseenter') $(this).data("hovered", true);
+	if (e.type === 'focusin') $(this).data("focused", true);
+	activate(this);
+}).on('mouseleave focusout', function(e) {
+	if (e.type === 'mouseleave') $(this).data("hovered", false);
+	if (e.type === 'focusout') $(this).data("focused", false);
+	deactivate(this);
+});
+
+$('.row > div:first-child').on('mouseenter', function() {
+	$(this).clearQueue();
+	$(this).animate({
+		height: imgheight,
+		opacity: 1,
+	}, animation_speed );
+}).on('mouseleave', function() {
+	$(this).clearQueue();
+	$(this).animate({
+		height: "0",
+		opacity: 0.3,
+	}, animation_speed );
+});
+
 $(".gallery").css("width", (($(".box").outerWidth()+(margin_before*2))*items_pre_row)+"px");
 $(".gallery .row, .gallery .row > div:first-child").css("overflow","hidden");
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("border-radius",border_radius); 
@@ -101,6 +131,19 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
+
+function navigate(self) {
+	var url = $(self).attr('url');
+	if (url) window.location = url;
+}
+
+$(".gallery > .row > .box").click(function(e) {
+	if ($(e.target).is('a')) return;
+	navigate(this);
+}).on('keydown', function(e) {
+	if (e.which == 13 || e.keyCode == 13) {
+		if ($(e.target).is('a')) return;
+		navigate(this);
+	}
+});
 });
