@@ -37,7 +37,7 @@ if(align=="center"){
 $(".gallery").css("margin","0 auto");}
 var child = $(".gallery > div").get();
 
-$(child).each(function() {
+$(child).each(function(index) {
 		$('<img/>')[0].src = $(this).attr("big");
 		$(this).css('background-image',"url("+$(this).attr('small')+")");
 		$(this).css('float',"left");
@@ -46,6 +46,7 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr({"tabindex":"0","role":"link","aria-label":$(this).text().trim().replace(/\s+/g,' ')||"Gallery item "+(index+1)});
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,40 +61,29 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
-	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
+$(".row > .box").on('mouseenter focusin',function(e){
+ var $this=$(this), $main=$this.parent().children(":first-child");
+ if(e.type==='mouseenter')$this.data('h',1);if(e.type==='focusin')$this.data('f',1);
+ $main.clearQueue().animate({height:imgheight,opacity:1},animation_speed).css('background-image',"url('"+$this.attr('big')+"')");
+ $this.css({"border":border_hover+"px solid "+border_color,"margin":margin_hover});
+}).on('mouseleave focusout',function(e){
+ var $this=$(this);if(e.type==='mouseleave')$this.data('h',0);if(e.type==='focusout')$this.data('f',0);
+ setTimeout(function(){
+  var active=0; $this.parent().find('.box').each(function(){if($(this).data('h')||$(this).data('f')){active=1;return false;}});
+  if($this.parent().children(":first-child").data('h'))active=1;
+  if(!active)$this.parent().children(":first-child").clearQueue().animate({height:"0"},animation_speed);
+  if(!$this.data('h')&&!$this.data('f'))$this.css({"border":border_before+"px solid "+border_color,"margin":margin_before});
+ },10);
 });
-$('.row > div:first-child').hover(
-function(){
- $(this).clearQueue();
-  $(this).animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed );
-},
-function(){
-$(this).clearQueue();
-$(this).animate({
-    height: "0",
-    opacity: 0.3,
-  }, animation_speed );
-}
-);
+$('.row > div:first-child').on('mouseenter',function(){
+ $(this).data('h',1).clearQueue().animate({height:imgheight,opacity:1},animation_speed);
+}).on('mouseleave',function(){
+ $(this).data('h',0); var $m=$(this);
+ setTimeout(function(){
+  var active=0; $m.parent().find('.box').each(function(){if($(this).data('h')||$(this).data('f')){active=1;return false;}});
+  if(!active)$m.clearQueue().animate({height:"0",opacity:0.3},animation_speed);
+ },10);
+});
 $(".gallery").css("width", (($(".box").outerWidth()+(margin_before*2))*items_pre_row)+"px");
 $(".gallery .row, .gallery .row > div:first-child").css("overflow","hidden");
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("border-radius",border_radius); 
@@ -101,6 +91,10 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
+$(".gallery > .row > .box").on('click keydown',function(e){
+ if($(e.target).is('a'))return;
+ if(e.type==='click'||(e.type==='keydown'&&e.which===13)){
+  var url=$(this).attr('url'); if(url)window.location=url;
+ }
+});
 });
