@@ -1,0 +1,3 @@
+## 2026-07-21 - Accessible jQuery Accordion Gallery Interaction Management
+**Learning:** In legacy libraries like jQuery 1.8.1, enabling keyboard focus and sequential tab navigation in custom hover-activated accordion lists requires managing overlapping mouse ('mouseenter'/'mouseleave') and keyboard ('focusin'/'focusout') states. Without persistent tracking flags (like JQuery `.data()`) and a micro-debounce (e.g. 10ms), moving focus between sibling elements or nested links triggers flickering and premature accordion collapses.
+**Action:** Always combine 'mouseenter focusin' and 'mouseleave focusout' with unique `.data('hovered')`/`.data('focused')` flags and a debounced verification check to ensure smooth transitions and robust state-locking.
