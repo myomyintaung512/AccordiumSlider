@@ -1,0 +1,3 @@
+## 2026-03-23 - Coordinated Hover and Focus in Shared-Preview Galleries
+**Learning:** In galleries where multiple interactive items share a single preview area, standard focusout/mouseleave events can trigger premature deactivation when navigating between items. Using separate 'hovered' and 'focused' flags combined with a 10ms micro-timeout debouncer provides a robust, flicker-free transition across both keyboard and mouse interaction states.
+**Action:** Always use explicit data flags (e.g., `.data('hovered')`, `.data('focused')`) and a unified debounced state-checking function to manage shared layout elements.
