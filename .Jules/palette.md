@@ -1,0 +1,3 @@
+## 2026-03-01 - Synchronizing Mouse and Keyboard States in Shared Expansion Areas
+**Learning:** In shared-preview galleries where multiple interactive elements target a single shared expansion area, relying solely on simple mouse/keyboard enter and leave event handlers leads to severe flickering and premature UI collapse during transitions. Tracking separate `hovered` and `focused` states via DOM metadata (`jQuery.data()`), combined with a debounced row-wide deactivation check, prevents race conditions and ensures smooth, non-flickering UI transitions.
+**Action:** Always coordinate complex interactive hover/focus states across sibling elements by maintaining explicit state flags and checking collective active states before executing deactivation animations.
