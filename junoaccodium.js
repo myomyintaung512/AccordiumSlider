@@ -37,7 +37,7 @@ if(align=="center"){
 $(".gallery").css("margin","0 auto");}
 var child = $(".gallery > div").get();
 
-$(child).each(function() {
+$(child).each(function(index) {
 		$('<img/>')[0].src = $(this).attr("big");
 		$(this).css('background-image',"url("+$(this).attr('small')+")");
 		$(this).css('float',"left");
@@ -46,6 +46,10 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr('tabindex', '0');
+		$(this).attr('role', 'link');
+		var txt = $(this).text().trim().replace(/\s+/g, ' ');
+		$(this).attr('aria-label', txt || ('Gallery item ' + (index + 1)));
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,40 +64,95 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
+$(".row > .box").on('mouseenter focusin', function(e){
+  var self = this;
+  if (e.type === 'mouseenter') $(self).data('hovered', true);
+  if (e.type === 'focusin') {
+    $(self).data('focused', true);
+    $(self).css("outline", "2px solid " + border_color);
+  }
+  $(self).parent().children(":first-child").clearQueue();
+  $(self).css("border",border_hover+"px solid "+border_color);
+  $(self).css("margin",margin_hover);
+  $(self).parent().children(":first-child").animate({
     height: imgheight,
     opacity: 1,
   }, animation_speed ); 
-	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
+  $(self).parent().children(":first-child").css('background-image',"url('"+$(self).attr('big')+"')");
+
+  $(".row").not($(self).parent()).each(function() {
+    var otherRow = this;
+    var anyActive = false;
+    $(otherRow).find(".box").each(function() {
+      if ($(this).data('hovered') || $(this).data('focused')) {
+        anyActive = true;
+      }
+    });
+    if (!anyActive) {
+      $(otherRow).children(":first-child").clearQueue();
+      $(otherRow).children(":first-child").animate({
+        height: "0"
+      }, animation_speed);
+    }
+  });
+}).on('mouseleave focusout', function(e){
+  var self = this;
+  if (e.type === 'mouseleave') $(self).data('hovered', false);
+  if (e.type === 'focusout') {
+    $(self).data('focused', false);
+    $(self).css("outline", "none");
+  }
+  setTimeout(function() {
+    if (!$(self).data('hovered') && !$(self).data('focused')) {
+      $(self).css("border",border_before+"px solid "+border_color);
+      $(self).css("margin",margin_before);
+    }
+    var anyActiveInRow = false;
+    $(self).siblings(".box").each(function() {
+      if ($(this).data('hovered') || $(this).data('focused')) {
+        anyActiveInRow = true;
+      }
+    });
+    if ($(self).data('hovered') || $(self).data('focused')) {
+      anyActiveInRow = true;
+    }
+    var mainImgHovered = $(self).parent().children(":first-child").data('hovered');
+    if (!anyActiveInRow && !mainImgHovered) {
+      $(self).parent().children(":first-child").clearQueue();
+      $(self).parent().children(":first-child").animate({
+        height: "0",
+      }, animation_speed );
+    }
+  }, 10);
 });
-$('.row > div:first-child').hover(
-function(){
- $(this).clearQueue();
-  $(this).animate({
+
+$('.row > div:first-child').on('mouseenter', function(){
+  var self = this;
+  $(self).data('hovered', true);
+  $(self).clearQueue();
+  $(self).animate({
     height: imgheight,
     opacity: 1,
   }, animation_speed );
-},
-function(){
-$(this).clearQueue();
-$(this).animate({
-    height: "0",
-    opacity: 0.3,
-  }, animation_speed );
-}
-);
+}).on('mouseleave', function(){
+  var self = this;
+  $(self).data('hovered', false);
+  setTimeout(function() {
+    var anyActiveInRow = false;
+    $(self).parent().find(".box").each(function() {
+      if ($(this).data('hovered') || $(this).data('focused')) {
+        anyActiveInRow = true;
+      }
+    });
+    if (!anyActiveInRow) {
+      $(self).clearQueue();
+      $(self).animate({
+        height: "0",
+        opacity: 0.3,
+      }, animation_speed );
+    }
+  }, 10);
+});
 $(".gallery").css("width", (($(".box").outerWidth()+(margin_before*2))*items_pre_row)+"px");
 $(".gallery .row, .gallery .row > div:first-child").css("overflow","hidden");
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("border-radius",border_radius); 
@@ -101,6 +160,25 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
+$(".gallery > .row > .box").click(function(e){
+  console.log("CLICK TRIGGERED on box, target is:", e.target.tagName);
+  if ($(e.target).is('a')) return;
+  var url = $(this).attr('url');
+  console.log("NAVIGATING to url from click:", url);
+  if (url) {
+    window.location = url;
+  }
+}).on('keydown', function(e) {
+  console.log("KEYDOWN TRIGGERED on box, key:", e.which);
+  if (e.which === 13 || e.which === 32) { // Enter or Space
+    console.log("ENTER/SPACE PRESSED, target is:", e.target.tagName);
+    if ($(e.target).is('a')) return;
+    var url = $(this).attr('url');
+    console.log("NAVIGATING to url from keydown:", url);
+    if (url) {
+      e.preventDefault();
+      window.location = url;
+    }
+  }
+});
 });
