@@ -1,0 +1,3 @@
+## 2026-07-30 - Enhanced Gallery Keyboard Nav and Shared State Sync
+**Learning:** In a legacy jQuery (v1.8.1) gallery with shared-preview row elements (`.main-img`), converting hover effects to support keyboard focus requires unified state tracking. Tracking `data-hovered` and `data-focused` flags on individual interactive `.box` elements avoids race conditions and flickering when keyboard users navigate between items or click nested hyperlinks.
+**Action:** Always delegate event listeners (`mouseenter focusin` and `mouseleave focusout`) and coordinate state properties globally per-row utilizing data properties and small timeouts (e.g. 10ms) to safely assess focus transition status before collapsing UI elements.
