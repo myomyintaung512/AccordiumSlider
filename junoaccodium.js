@@ -37,7 +37,7 @@ if(align=="center"){
 $(".gallery").css("margin","0 auto");}
 var child = $(".gallery > div").get();
 
-$(child).each(function() {
+$(child).each(function(index) {
 		$('<img/>')[0].src = $(this).attr("big");
 		$(this).css('background-image',"url("+$(this).attr('small')+")");
 		$(this).css('float',"left");
@@ -46,6 +46,9 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		$(this).attr("tabindex", "0");
+		var cleanText = ($(this).text() || "").trim().replace(/\s+/g, ' ');
+		$(this).attr("aria-label", cleanText || ('Gallery item ' + (index + 1)));
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -58,42 +61,63 @@ $(child).each(function() {
             });
             row_wreapper.append(row);
         }
-$('.gallery > .row').prepend('<div class="main-img"></div>');
-$('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
-	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
-});
-$('.row > div:first-child').hover(
-function(){
- $(this).clearQueue();
-  $(this).animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed );
-},
-function(){
-$(this).clearQueue();
-$(this).animate({
-    height: "0",
-    opacity: 0.3,
-  }, animation_speed );
+
+function activateBox(box) {
+  var $b = $(box), $row = $b.parent(), $main = $row.children(":first-child");
+  $(".gallery > .row").not($row).each(function() {
+    var $r = $(this), $m = $r.children(":first-child"), active = $m.data("hovered");
+    $r.children(".box").each(function() { if ($(this).data("hovered") || $(this).data("focused")) active = true; });
+    if (!active) {
+      $m.clearQueue().animate({ height: "0" }, animation_speed);
+      $r.children(".box").css({ border: border_before + "px solid " + border_color, margin: margin_before });
+    }
+  });
+  $b.css({ border: border_hover + "px solid " + border_color, margin: margin_hover });
+  $main.clearQueue().animate({ height: imgheight, opacity: 1 }, animation_speed).css('background-image', "url('" + $b.attr('big') + "')");
 }
-);
+
+function checkDeactivate(self) {
+  var $row = $(self).closest(".row"), $main = $row.children(":first-child");
+  setTimeout(function() {
+    var active = !!$main.data("hovered");
+    $row.children(".box").each(function() { if ($(this).data("hovered") || $(this).data("focused")) active = true; });
+    if (!active) {
+      $main.clearQueue().animate({ height: "0" }, animation_speed);
+      $row.children(".box").css({ border: border_before + "px solid " + border_color, margin: margin_before });
+    } else {
+      $row.children(".box").each(function() {
+        if (!$(this).data("hovered") && !$(this).data("focused")) {
+          $(this).css({ border: border_before + "px solid " + border_color, margin: margin_before });
+        }
+      });
+    }
+  }, 10);
+}
+
+$('.gallery > .row').prepend('<div class="main-img"></div>');
+
+$('.gallery > .row > .main-img').on('mouseenter', function(e) {
+  $(this).data("hovered", true).clearQueue().animate({ height: imgheight, opacity: 1 }, animation_speed);
+}).on('mouseleave', function(e) {
+  $(this).data("hovered", false);
+  checkDeactivate(this);
+});
+
+$(".row > .box").on('mouseenter focusin', function(e) {
+  $(this).data(e.type === 'mouseenter' ? 'hovered' : 'focused', true);
+  activateBox(this);
+}).on('mouseleave focusout', function(e) {
+  $(this).data(e.type === 'mouseleave' ? 'hovered' : 'focused', false);
+  checkDeactivate(this);
+}).on('click', function(e) {
+  if (!$(e.target).is('a') && $(this).attr('url')) window.location = $(this).attr('url');
+}).on('keydown', function(e) {
+  if ((e.which === 13 || e.which === 32) && !$(e.target).is('a') && $(this).attr('url')) {
+    e.preventDefault();
+    window.location = $(this).attr('url');
+  }
+});
+
 $(".gallery").css("width", (($(".box").outerWidth()+(margin_before*2))*items_pre_row)+"px");
 $(".gallery .row, .gallery .row > div:first-child").css("overflow","hidden");
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("border-radius",border_radius); 
@@ -101,6 +125,4 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
 });
