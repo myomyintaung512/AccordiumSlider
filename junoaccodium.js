@@ -37,15 +37,19 @@ if(align=="center"){
 $(".gallery").css("margin","0 auto");}
 var child = $(".gallery > div").get();
 
-$(child).each(function() {
-		$('<img/>')[0].src = $(this).attr("big");
-		$(this).css('background-image',"url("+$(this).attr('small')+")");
-		$(this).css('float',"left");
-		$(this).css('width',box_width+"px");
-		$(this).css('height',box_height+"px");
-		$(this).css("border",border_before+"px solid "+border_color); 
-		$(this).css("margin",margin_before);
-		$(this).addClass("box");
+$(child).each(function(index) {
+		var self = $(this);
+		$('<img/>')[0].src = self.attr("big");
+		self.css('background-image',"url("+self.attr('small')+")");
+		self.css('float',"left");
+		self.css('width',box_width+"px");
+		self.css('height',box_height+"px");
+		self.css("border",border_before+"px solid "+border_color);
+		self.css("margin",margin_before);
+		self.addClass("box");
+		self.attr({ 'tabindex': '0', 'role': 'link' });
+		var txt = self.text().trim().replace(/\s+/g, ' ');
+		self.attr('aria-label', txt || ('Gallery item ' + (index + 1)));
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,24 +64,55 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
- $(this).parent().children(":first-child").clearQueue();
- $(this).css("border",border_hover+"px solid "+border_color); 
- $(this).css("margin",margin_hover);
-  $(this).parent().children(":first-child").animate({
-    height: imgheight,
-    opacity: 1,
-  }, animation_speed ); 
-	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
-});
+$(".row > .box")
+  .on("mouseenter focusin", function(e) {
+    var self = $(this);
+    if (e.type === "focusin") {
+      self.data("focused", true);
+    } else {
+      self.data("hovered", true);
+    }
+    var mainImg = self.parent().children(":first-child");
+    mainImg.clearQueue();
+    self.css("border", border_hover + "px solid " + border_color);
+    self.css("margin", margin_hover);
+    mainImg.animate({
+      height: imgheight,
+      opacity: 1
+    }, animation_speed);
+    mainImg.css("background-image", "url('" + self.attr("big") + "')");
+  })
+  .on("mouseleave focusout", function(e) {
+    var self = $(this);
+    if (e.type === "focusout") {
+      self.data("focused", false);
+    } else {
+      self.data("hovered", false);
+    }
+
+    setTimeout(function() {
+      if (!self.data("hovered") && !self.data("focused")) {
+        if (self.hasClass('box')) {
+          self.css("border", border_before + "px solid " + border_color);
+          self.css("margin", margin_before);
+        }
+      }
+      // Deactivate only if no other sibling box is active and this item is fully inactive
+      var activeFound = false;
+      self.siblings(".box").each(function() {
+        if ($(this).data("hovered") || $(this).data("focused")) {
+          activeFound = true;
+        }
+      });
+      if (!self.data("hovered") && !self.data("focused") && !activeFound) {
+        var mainImg = self.parent().children(":first-child");
+        mainImg.clearQueue();
+        mainImg.animate({
+          height: "0"
+        }, animation_speed);
+      }
+    }, 10);
+  });
 $('.row > div:first-child').hover(
 function(){
  $(this).clearQueue();
@@ -101,6 +136,21 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
+$(".gallery > .row > .box").click(function(e){
+  if ($(e.target).is('a')) return;
+  var url = $(this).attr('url');
+  if (url) {
+    window.location = url;
+  }
+});
+$(".gallery > .row > .box").keydown(function(e){
+  if ($(e.target).is('a')) return;
+  if (e.which === 13 || e.which === 32) { // Enter or Space
+    e.preventDefault();
+    var url = $(this).attr('url');
+    if (url) {
+      window.location = url;
+    }
+  }
+});
 });
