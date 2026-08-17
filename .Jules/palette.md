@@ -1,0 +1,3 @@
+## 2026-08-17 - Keyboard Accessibility & ARIA Support for Custom jQuery Gallery
+**Learning:** Custom interactive gallery components built with `<div>` elements require explicit `tabindex="0"`, `role="button"`, and cleaned `aria-label` attributes to be discoverable and operable by screen readers and keyboard-only users. Furthermore, binding `focusin`/`focusout` alongside `mouseenter`/`mouseleave` ensures preview expansions respond seamlessly to keyboard navigation.
+**Action:** Always verify that interactive custom components have explicit keyboard focusability, ARIA attributes, and keydown handlers (`Enter`/`Space`) with `e.preventDefault()` on Space to prevent page scroll.
