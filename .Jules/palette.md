@@ -1,0 +1,3 @@
+## 2026-08-20 - Keyboard Accessibility & Event Decoupling in Legacy jQuery Accordions
+**Learning:** Legacy jQuery accordion components built around hover/click on raw `div` elements often break keyboard navigation and screen reader semantics. Synchronizing hover and focus events via `.on('mouseenter focusin')` and `.on('mouseleave focusout')` with `.data('hovered')` / `.data('focused')` flags provides a robust, desync-free experience across both mouse and keyboard interactions.
+**Action:** Always add `tabindex="0"`, `role="button"`, and descriptive `aria-label` attributes to custom interactive container elements, and support `Enter` and `Space` key activation while preventing Spacebar default scrolling (`e.preventDefault()`).
