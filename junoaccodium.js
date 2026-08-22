@@ -37,7 +37,7 @@ if(align=="center"){
 $(".gallery").css("margin","0 auto");}
 var child = $(".gallery > div").get();
 
-$(child).each(function() {
+$(child).each(function(index) {
 		$('<img/>')[0].src = $(this).attr("big");
 		$(this).css('background-image',"url("+$(this).attr('small')+")");
 		$(this).css('float',"left");
@@ -46,6 +46,11 @@ $(child).each(function() {
 		$(this).css("border",border_before+"px solid "+border_color); 
 		$(this).css("margin",margin_before);
 		$(this).addClass("box");
+		var textContent = $(this).text().trim().replace(/\s+/g, ' ');
+		var ariaLabel = textContent || ('Gallery item ' + (index + 1));
+		$(this).attr('tabindex', '0');
+		$(this).attr('role', 'button');
+		$(this).attr('aria-label', ariaLabel);
 	});
 		 var row_wreapper=$('.gallery');
         while(child.length)
@@ -60,7 +65,7 @@ $(child).each(function() {
         }
 $('.gallery > .row').prepend('<div class="main-img"></div>');
 $('.gallery > .row > .main-img').css("","");
-$(".row > .box").hover(function(){
+$(".row > .box").on('mouseenter focusin', function(){
  $(this).parent().children(":first-child").clearQueue();
  $(this).css("border",border_hover+"px solid "+border_color); 
  $(this).css("margin",margin_hover);
@@ -69,14 +74,20 @@ $(".row > .box").hover(function(){
     opacity: 1,
   }, animation_speed ); 
 	$(this).parent().children(":first-child").css('background-image',"url('"+$(this).attr('big')+"')");
-},
-function(){
-$(this).parent() .children(":first-child").clearQueue();
-$(this).css("border",border_before+"px solid "+border_color); 
-$(this).css("margin",margin_before); 
-$(this).parent() .children(":first-child").animate({
-    height: "0",   
-  }, animation_speed );
+}).on('mouseleave focusout', function(){
+ var $this = $(this);
+ $this.css("border",border_before+"px solid "+border_color);
+ $this.css("margin",margin_before);
+ setTimeout(function(){
+   var $row = $this.parent();
+   var hasFocus = $row.find('.box').filter(function(){ return this === document.activeElement || $.contains(this, document.activeElement); }).length > 0;
+   var hasHover = $row.find('.box:hover').length > 0 || $row.children(':first-child').is(':hover');
+   if (!hasFocus && !hasHover) {
+     $row.children(":first-child").clearQueue().animate({
+       height: "0"
+     }, animation_speed );
+   }
+ }, 10);
 });
 $('.row > div:first-child').hover(
 function(){
@@ -101,6 +112,14 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
-  window.location = $(this).attr('url'); });
+$(".gallery > .row > .box").on('click keydown', function(e){
+  if (e.type === 'click' || e.keyCode === 13 || e.keyCode === 32) {
+    if ($(e.target).is('a')) return;
+    if (e.keyCode === 32) e.preventDefault();
+    var url = $(this).attr('url');
+    if (url) {
+      window.location = url;
+    }
+  }
+});
 });
