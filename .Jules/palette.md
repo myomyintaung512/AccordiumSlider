@@ -1,0 +1,3 @@
+## 2026-08-24 - Interactive Custom jQuery Box Accordion Accessibility
+**Learning:** Legacy div-based custom galleries often lack keyboard accessibility and screen reader support. Adding `tabindex="0"`, `role="button"`, and descriptive `aria-label`s along with synchronized `focusin`/`focusout` listeners enables seamless keyboard exploration and preview expansion without breaking existing mouse interaction logic.
+**Action:** When updating custom widget components built with legacy jQuery, always ensure `tabindex`, ARIA roles, `aria-label` fallback generation, and keyboard `keydown` triggers (Enter/Space) are initialized alongside mouse events.
