@@ -101,6 +101,7 @@ $(".gallery > .row > .box, .gallery > .row > .main-img").css("-moz-border-radius
 $(".gallery > .row > .box, .gallery > .row > .main-img").css("-webkit-border-radius",border_radius); 
 $(".gallery > .row > .main-img").css("background-position","center center"); 
 $(".gallery > .row > .main-img").css("background-size","100%"); 
-$(".gallery > .row > .box").click(function(){
+$(".gallery > .row > .box").click(function(e){
+  if ($(e.target).is('a')) return;
   window.location = $(this).attr('url'); });
 });
