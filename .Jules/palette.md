@@ -1,0 +1,3 @@
+## 2026-08-30 - Accordion Gallery Keyboard Focus & ARIA Improvements
+**Learning:** Legacy jQuery accordion galleries that rely solely on `.hover()` leave keyboard users stranded. Synchronizing mouse and focus events via `.on('mouseenter focusin', ...)` and `.on('mouseleave focusout', ...)` while attaching semantic `role="button"`, `tabindex="0"`, and `aria-label` enables seamless keyboard accessibility without layout shifts.
+**Action:** When working with jQuery mouse hover components, always chain focus event listeners and ensure interactive container items have proper ARIA attributes and keydown handler support (Enter/Space).
