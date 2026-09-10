@@ -1,0 +1,3 @@
+## 2026-03-23 - Synchronizing Focus and Hover in Accordion Galleries
+**Learning:** Legacy jQuery galleries often rely solely on mouse hover events (`mouseenter`/`mouseleave`), leaving keyboard users unable to reveal expanded image previews or navigate items. Using unified `.on('mouseenter focusin', ...)` and `.on('mouseleave focusout', ...)` listeners along with `tabindex="0"`, `role="link"`, and descriptive `aria-label`s makes interactive image grids fully accessible without disrupting mouse interactions.
+**Action:** Always bind focus/blur handlers alongside mouse hover handlers when making custom interactive elements accessible to keyboard and screen reader users.
