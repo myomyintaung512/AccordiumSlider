@@ -1,0 +1,3 @@
+## 2026-09-13 - Keyboard Accessibility & ARIA Labels in Custom jQuery Galleries
+**Learning:** Custom div-based image galleries often lack natural keyboard accessibility and screen reader support unless explicit ARIA attributes (`role="link"`, `aria-label`, `tabindex="0"`) and keyboard event listeners (`focusin`/`focusout`, `keydown` Enter/Space) are attached.
+**Action:** When working with jQuery-based interactive galleries, attach `tabindex="0"` and derived/fallback `aria-label` attributes during initialization, chain focus events with mouse events (`on("mouseenter focusin")`), and prevent default browser scrolling on Space keypress.
