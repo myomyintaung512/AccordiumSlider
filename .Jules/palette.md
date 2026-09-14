@@ -1,0 +1,3 @@
+## 2026-09-14 - Interactive Gallery Box Keyboard & Screen Reader Accessibility
+**Learning:** In legacy jQuery accordion/slider galleries, div-based gallery boxes lack standard keyboard focusability, ARIA attributes, and keydown activation, preventing keyboard and screen reader users from discovering or triggering expanded previews.
+**Action:** Automatically inject `tabindex="0"`, `role="button"`, and `aria-label` attributes during box initialization, bind `focusin`/`focusout` handlers in tandem with hover states, and capture Enter/Space `keydown` events while preserving nested link interactions and preventing default scrolling.
