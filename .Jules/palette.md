@@ -1,0 +1,3 @@
+## 2026-03-31 - Synchronizing Focus and Hover States on Legacy Accordion Widgets
+**Learning:** Legacy jQuery accordion components relying solely on hover (`mouseenter`/`mouseleave`) can be made keyboard-accessible by chaining `focusin` and `focusout` handlers alongside `mouseenter`/`mouseleave`. Decoupling focus style removal from sibling state checks prevents stuck expansion states and duplicate borders during rapid keyboard navigation.
+**Action:** Always pair `focusin`/`focusout` with `mouseenter`/`mouseleave` and set `tabindex="0"`, `role="link"`, and sanitized `aria-label`s on interactive container cards.
