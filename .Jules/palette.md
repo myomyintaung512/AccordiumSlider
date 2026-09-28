@@ -1,0 +1,3 @@
+## 2026-03-30 - Keyboard Navigation and ARIA Attributes in jQuery Accordion Gallery
+**Learning:** Legacy jQuery accordion gallery items represented as custom `<div>`s were completely unnavigable by screen readers and keyboard users. Adding `tabindex="0"`, `role="button"`, and dynamically derived `aria-label`s along with combined `mouseenter`/`focusin` and `mouseleave`/`focusout` listeners enables seamless keyboard accessibility without interfering with nested link elements.
+**Action:** Always combine hover and focus event management for interactive custom container elements, and handle keydown events (Enter/Space with `preventDefault`) on non-button focusable containers.
