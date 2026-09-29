@@ -1,0 +1,3 @@
+## 2026-09-29 - Accessible Interactive Gallery Accordion Tiles
+**Learning:** Legacy jQuery accordion components with hover/click div tiles lack keyboard focus and ARIA metadata. Binding `focusin`/`focusout` alongside `mouseenter`/`mouseleave` and supporting `Enter`/`Space` keydown events makes custom tile components fully accessible to keyboard and screen reader users.
+**Action:** When converting custom div click targets to accessible controls, chain `mouseenter focusin` and `mouseleave focusout`, add `tabindex="0"` and `role="button"`, and handle `Space`/`Enter` keydown while avoiding triggering outer click handlers when clicking nested links.
