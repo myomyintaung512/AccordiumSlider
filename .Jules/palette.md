@@ -1,0 +1,3 @@
+## 2026-11-03 - Keyboard Navigation and Focus Synchronization for Accordion Galleries
+**Learning:** Legacy jQuery accordion and hover-expanding galleries that inject dynamic rows and use `.hover()` completely exclude keyboard users and screen readers from viewing expanded content and navigating items. Synchronizing `.on('mouseenter focusin', ...)` and `.on('mouseleave focusout', ...)` along with `tabindex="0"`, `role="button"`, descriptive `aria-label`s, and Enter/Space `keydown` activation seamlessly bridges mouse and keyboard accessibility.
+**Action:** When working with image/card galleries, always map hover interactions to focus events and ensure parent card keyboard triggers ignore activations on nested interactive anchor links.
