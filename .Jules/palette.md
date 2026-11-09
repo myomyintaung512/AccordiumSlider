@@ -1,0 +1,3 @@
+## 2026-11-09 - Accessible Accordion Gallery Keyboard Navigation
+**Learning:** In legacy jQuery galleries with dynamic image accordions, elements lack tabindex, role, and focus handling by default. Synchronizing `focusin`/`focusout` with `mouseenter`/`mouseleave` and adding keyboard activation via Enter/Space (while ignoring bubbling from nested links) provides full keyboard accessibility without interrupting existing mouse interactions.
+**Action:** When enhancing custom legacy interactive widgets, track focus states explicitly to avoid premature collapses, and guard keyboard navigation against triggering when interactive child elements (like links) are activated.
